@@ -7,8 +7,8 @@ pub struct Config {
 
 impl Config {
     pub fn init() -> Config {
-        let host = std::env::var("SERVER.HOST").expect("SERVER.HOST must be set");
-        let port = std::env::var("SERVER.PORT").expect("SERVER.PORT must be set");
+        let host = std::env::var("SERVER_HOST").expect("SERVER_HOST must be set");
+        let port = std::env::var("SERVER_PORT").expect("SERVER_PORT must be set");
         let pg_conn_str = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
         Config {
