@@ -9,13 +9,12 @@ readme = "README.md"
 [dependencies]
 actix-cors = "0.7.0"
 actix-web = "4.8.0"
-argon2 = "0.5.3"
 async-trait = "0.1.80"
 chrono = { version = "0.4.38", features = ["serde"] }
 dotenv = "0.15.0"
 env_logger = "0.11.3"
 futures-util = "0.3.30"
-jsonwebtoken = "9.3.0"
+num_cpus = "1.16.0"
 openssl-probe = "0.1.5"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = { version = "1.0.120", features = ["preserve_order"] }
@@ -27,9 +26,5 @@ sqlx = { version = "0.7.4", features = [
   "uuid",
   "macros",
 ] }
+tokio = { version = "1.38.0", features = ["full"] }
 uuid = { version = "1.9.1", features = ["serde", "v4"] }
-validator = { version = "0.18.1", features = ["derive"] }
-
-[package.metadata.scripts]
-dup = "docker-compose up -d"
-ddown = "docker-compose down"
