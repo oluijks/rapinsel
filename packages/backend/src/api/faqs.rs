@@ -1,57 +1,57 @@
 use crate::model::faq::FaqModel;
+use crate::util::response::{FaqResponse, FaqsResponse};
 use crate::AppState;
+use actix_web::body::BoxBody;
 use actix_web::{
     get,
     web::{Data, Path},
-    HttpResponse, Responder,
+    HttpResponse,
 };
 use uuid::Uuid;
 
 #[get("/faqs")]
-pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
-    match sqlx::query_as!(FaqModel, "SELECT * FROM faqs")
-        .fetch_all(&state.db)
-        .await
-    {
+pub async fn fetch_faqs_handler(state: Data<AppState>) -> HttpResponse<BoxBody> {
+    let query_result: Result<Vec<FaqModel>, sqlx::Error> =
+        sqlx::query_as!(FaqModel, "SELECT * FROM faqs")
+            .fetch_all(&state.db)
+            .await;
+
+    match query_result {
         Ok(faqs) => {
-            let faqs_response = serde_json::json!({
-                "status": "success",
-                "data": serde_json::json!({
-                    "faqs": faqs
-                })
-            });
-            return HttpResponse::Ok().json(faqs_response);
+            let faqs_response = FaqsResponse {
+                status: "success".to_string(),
+                data: faqs,
+            };
+            HttpResponse::Ok().json(faqs_response)
         }
-        Err(_) => {
-            let message = format!("no faqs found");
-            return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "ok", "message": message}));
-        }
+        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
     }
 }
 
 #[get("/faqs/{id}")]
-pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
+pub async fn fetch_faq_handler(
+    state: Data<AppState>,
+    path: Path<uuid::Uuid>,
+) -> HttpResponse<BoxBody> {
     let fid: Uuid = path.into_inner();
-    let query_result: Result<Option<FaqModel>, sqlx::Error> =
+    let query_result: Result<FaqModel, sqlx::Error> =
         sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
-            .fetch_optional(&state.db)
+            .fetch_one(&state.db)
             .await;
 
     match query_result {
-        Ok(Some(faq)) => {
-            let faq_response = serde_json::json!({
-                "status": "ok",
-                "data": serde_json::json!({
-                "faq": faq
-            })});
-            return HttpResponse::Ok().json(faq_response);
+        Ok(faq) => {
+            let faq_response = FaqResponse {
+                status: "ok".to_string(),
+                data: faq,
+            };
+            HttpResponse::Ok().json(faq_response)
         }
-        Ok(None) => {
+        Err(_error) => {
+            // @see https://docs.rs/sqlx-core/0.7.4/sqlx_core/error/enum.Error.html
+            // no rows returned by a query that expected to return at least one row
             let message = format!("faq with id: {} not found", fid);
-            return HttpResponse::NotFound()
-                .json(serde_json::json!({"status": "ok", "message": message}));
+            HttpResponse::NotFound().json(serde_json::json!({"status": "fail", "message": message}))
         }
-        Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
     }
 }
