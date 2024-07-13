@@ -3,6 +3,7 @@
 mod api;
 mod config;
 mod model;
+mod util;
 
 use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web::scope, web::Data, App, HttpServer};
@@ -18,6 +19,8 @@ use std::error::Error;
 pub struct AppState {
     db: Pool<Postgres>,
 }
+
+const API_SCOPE: &str = "/api/v1";
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -46,7 +49,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!(
         "{}",
-        format!("server is running on {}:{}", config.host, config.port)
+        format_args!("server is running on {}:{}", config.host, config.port)
     );
 
     HttpServer::new(move || {
@@ -67,14 +70,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .wrap(Logger::default())
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(
-                scope("/api/v1")
+                scope(API_SCOPE)
                     .service(api_info_handler)
                     .service(health_check_handler)
                     .service(fetch_faq_handler)
                     .service(fetch_faqs_handler),
             )
     })
-    .bind(format!("{}:{}", config.host, config.port))?
+    .bind(format!("{}:{}", config.host, config.port))
+    .expect("address should be free and valid")
+    .workers(num_cpus::get())
     .run()
     .await?;
 

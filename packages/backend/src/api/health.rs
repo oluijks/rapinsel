@@ -9,7 +9,7 @@ pub struct Status {
 #[get("/health-check")]
 pub async fn health_check_handler() -> impl Responder {
     HttpResponse::Ok().json(Status {
-        status: "Ok".to_string(),
+        status: "ok".to_string(),
     })
 }
 
@@ -29,7 +29,7 @@ mod tests {
 
         let body = test::read_body(resp).await;
         let expected_json = serde_json::json!({
-            "status": "Ok",
+            "status": "ok",
         });
 
         assert_eq!(body, serde_json::to_string(&expected_json).unwrap());
