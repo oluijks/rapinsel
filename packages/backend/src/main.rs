@@ -3,14 +3,15 @@
 mod api;
 mod config;
 mod model;
+mod scopes;
 mod util;
 
 use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web::scope, web::Data, App, HttpServer};
-use api::faqs::{fetch_faq_handler, fetch_faqs_handler};
 use api::{health::health_check_handler, info::api_info_handler};
 use config::Config;
 use dotenv::dotenv;
+use scopes::faqs::scoped_faqs_config;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
 use std::error::Error;
@@ -20,7 +21,7 @@ pub struct AppState {
     db: Pool<Postgres>,
 }
 
-const API_SCOPE: &str = "/api/v1";
+const API_SCOPE: &str = "/api/";
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -32,24 +33,26 @@ async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let config: Config = Config::init();
+
+    let scoped_api_version: String = API_SCOPE.to_owned() + &config.version;
     let pool: Pool<Postgres> = match PgPoolOptions::new()
         .max_connections(10)
         .connect(&config.pg_conn_str)
         .await
     {
         Ok(pool) => {
-            println!("postgres pool created");
+            println!("[pdb] pool created");
             pool
         }
         Err(err) => {
-            println!("failed to create postgres pool: {:?}", err);
+            println!("[pdb] failed to create pool: {:?}", err);
             std::process::exit(1);
         }
     };
 
     println!(
         "{}",
-        format_args!("server is running on {}:{}", config.host, config.port)
+        format_args!("[api] server is running on {}:{}", config.host, config.port)
     );
 
     HttpServer::new(move || {
@@ -70,11 +73,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .wrap(Logger::default())
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(
-                scope(API_SCOPE)
+                scope(&scoped_api_version.to_owned())
+                    .configure(scoped_faqs_config)
                     .service(api_info_handler)
-                    .service(health_check_handler)
-                    .service(fetch_faq_handler)
-                    .service(fetch_faqs_handler),
+                    .service(health_check_handler),
             )
     })
     .bind(format!("{}:{}", config.host, config.port))
