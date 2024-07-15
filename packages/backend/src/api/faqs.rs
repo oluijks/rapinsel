@@ -2,6 +2,7 @@ use crate::model::faq::{CreateFaqPayload, FaqModel};
 use crate::util::response::{FaqResponse, FaqsResponse};
 use crate::AppState;
 use actix_web::body::BoxBody;
+use actix_web::Responder;
 use actix_web::{
     delete, get, post, put,
     web::{Data, Json, Path},
@@ -19,6 +20,10 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> HttpResponse<BoxBody> 
 
     match query_result {
         Ok(faqs) => {
+            if faqs.len() == 0 {
+                return HttpResponse::NotFound()
+                    .json(serde_json::json!({"status": "ok", "message": "no faqs found"}));
+            }
             let faqs_response = FaqsResponse {
                 status: "success".to_string(),
                 data: faqs,
@@ -103,7 +108,7 @@ pub async fn update_faq_handler(
         Ok(_) => {
             let fid: Uuid = path.into_inner();
             let query_result: Result<FaqModel, sqlx::Error> =
-                sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
+                sqlx::query_as!(FaqModel, r#"SELECT * FROM faqs WHERE id = $1"#, fid)
                     .fetch_one(&state.db)
                     .await;
 
@@ -147,32 +152,18 @@ pub async fn update_faq_handler(
 }
 
 #[delete("/faqs/{id}")]
-pub async fn delete_faq_handler(
-    state: Data<AppState>,
-    path: Path<uuid::Uuid>,
-) -> HttpResponse<BoxBody> {
+pub async fn delete_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
     let fid: Uuid = path.into_inner();
-    let query_result: Result<FaqModel, sqlx::Error> =
-        sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
-            .fetch_one(&state.db)
-            .await;
+    let rows_affected = sqlx::query!(r#"DELETE FROM faqs WHERE id = $1"#, fid)
+        .execute(&state.db)
+        .await
+        .unwrap()
+        .rows_affected();
 
-    match query_result {
-        Ok(_) => {
-            let delete_query_result: Result<sqlx::postgres::PgQueryResult, sqlx::Error> =
-                sqlx::query_as!(FaqModel, "DELETE FROM faqs WHERE id = $1", fid)
-                    .execute(&state.db)
-                    .await;
-
-            match delete_query_result {
-                Ok(_) => HttpResponse::NoContent().finish(),
-                Err(err) => HttpResponse::InternalServerError()
-                    .json(serde_json::json!({"status": "fail", "message": err.to_string()})),
-            }
-        }
-        Err(_error) => {
-            let message = format!("faq with id: {} not found", fid);
-            HttpResponse::NotFound().json(serde_json::json!({"status": "fail", "message": message}))
-        }
+    if rows_affected == 0 {
+        let message = format!("faq with id: {} not found", fid);
+        return HttpResponse::NotFound()
+            .json(serde_json::json!({"status": "fail", "message": message}));
     }
+    return HttpResponse::NoContent().finish();
 }
