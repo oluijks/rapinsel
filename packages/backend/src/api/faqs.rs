@@ -3,7 +3,7 @@ use crate::util::response::{FaqResponse, FaqsResponse};
 use crate::AppState;
 use actix_web::body::BoxBody;
 use actix_web::{
-    get, post, put,
+    delete, get, post, put,
     web::{Data, Json, Path},
     HttpResponse,
 };
@@ -109,18 +109,14 @@ pub async fn update_faq_handler(
 
             match query_result {
                 Ok(mut faq) => {
-                    if !body.question.is_empty() {
-                        faq.question = body.question.clone();
-                    }
-                    if !body.answer.is_empty() {
-                        faq.answer = body.answer.clone();
-                    }
+                    faq.question = body.question.clone();
+                    faq.answer = body.answer.clone();
 
                     let updated_faq_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                         FaqModel,
                         r#"UPDATE faqs SET question = $1, answer = $2 WHERE id = $3 RETURNING *"#,
-                        faq.question.to_string(),
-                        faq.answer.to_string(),
+                        body.question.to_string(),
+                        body.answer.to_string(),
                         fid
                     )
                     .fetch_one(&state.db)
@@ -132,7 +128,7 @@ pub async fn update_faq_handler(
                                 status: "updated".to_string(),
                                 data: faq,
                             };
-                            HttpResponse::Created().json(faq_response)
+                            HttpResponse::Ok().json(faq_response)
                         }
                         Err(err) => HttpResponse::InternalServerError().json(
                             serde_json::json!({"status": "fail", "message": err.to_string()}),
@@ -147,5 +143,36 @@ pub async fn update_faq_handler(
             }
         }
         Err(err) => HttpResponse::BadRequest().json(err),
+    }
+}
+
+#[delete("/faqs/{id}")]
+pub async fn delete_faq_handler(
+    state: Data<AppState>,
+    path: Path<uuid::Uuid>,
+) -> HttpResponse<BoxBody> {
+    let fid: Uuid = path.into_inner();
+    let query_result: Result<FaqModel, sqlx::Error> =
+        sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
+            .fetch_one(&state.db)
+            .await;
+
+    match query_result {
+        Ok(_) => {
+            let delete_query_result: Result<sqlx::postgres::PgQueryResult, sqlx::Error> =
+                sqlx::query_as!(FaqModel, "DELETE FROM faqs WHERE id = $1", fid)
+                    .execute(&state.db)
+                    .await;
+
+            match delete_query_result {
+                Ok(_) => HttpResponse::NoContent().finish(),
+                Err(err) => HttpResponse::InternalServerError()
+                    .json(serde_json::json!({"status": "fail", "message": err.to_string()})),
+            }
+        }
+        Err(_error) => {
+            let message = format!("faq with id: {} not found", fid);
+            HttpResponse::NotFound().json(serde_json::json!({"status": "fail", "message": message}))
+        }
     }
 }
