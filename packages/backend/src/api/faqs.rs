@@ -1,7 +1,6 @@
 use crate::model::faq::{CreateFaqPayload, FaqModel};
 use crate::util::response::{FaqResponse, FaqsResponse};
 use crate::AppState;
-use actix_web::body::BoxBody;
 use actix_web::Responder;
 use actix_web::{
     delete, get, post, put,
@@ -12,7 +11,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[get("/faqs")]
-pub async fn fetch_faqs_handler(state: Data<AppState>) -> HttpResponse<BoxBody> {
+pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
     let query_result: Result<Vec<FaqModel>, sqlx::Error> =
         sqlx::query_as!(FaqModel, "SELECT * FROM faqs")
             .fetch_all(&state.db)
@@ -35,10 +34,7 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> HttpResponse<BoxBody> 
 }
 
 #[get("/faqs/{id}")]
-pub async fn fetch_faq_handler(
-    state: Data<AppState>,
-    path: Path<uuid::Uuid>,
-) -> HttpResponse<BoxBody> {
+pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
     let fid: Uuid = path.into_inner();
     let query_result: Result<FaqModel, sqlx::Error> =
         sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
@@ -66,7 +62,7 @@ pub async fn fetch_faq_handler(
 pub async fn create_faq_handler(
     state: Data<AppState>,
     body: Json<CreateFaqPayload>,
-) -> HttpResponse<BoxBody> {
+) -> impl Responder {
     let is_payload_valid = body.validate();
 
     match is_payload_valid {
@@ -101,7 +97,7 @@ pub async fn update_faq_handler(
     state: Data<AppState>,
     path: Path<uuid::Uuid>,
     body: Json<CreateFaqPayload>,
-) -> HttpResponse<BoxBody> {
+) -> impl Responder {
     let is_payload_valid = body.validate();
 
     match is_payload_valid {
