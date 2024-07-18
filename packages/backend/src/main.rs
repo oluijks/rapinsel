@@ -3,7 +3,7 @@
 mod api;
 mod config;
 mod model;
-mod scopes;
+mod scope;
 mod util;
 
 use actix_web::{http::header, web::scope, App, HttpServer};
@@ -72,7 +72,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .app_data(actix_web::web::Data::new(AppState { db: pool.clone() }))
             .service(
                 scope(&scoped_api_version.to_owned())
-                    .configure(scopes::faqs::scoped_faqs_config)
+                    .configure(scope::faqs::scoped_faqs_config)
                     .service(api_info_handler)
                     .service(health_check_handler),
             )
