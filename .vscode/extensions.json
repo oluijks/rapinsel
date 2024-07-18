@@ -2,6 +2,8 @@
   "recommendations": [
     "rust-lang.rust-analyzer",
     "tamasfe.even-better-toml",
-    "svelte.svelte-vscode"
+    "svelte.svelte-vscode",
+    "ms-azuretools.vscode-docker",
+    "postman.postman-for-vscode"
   ]
 }
