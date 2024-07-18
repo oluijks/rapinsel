@@ -37,7 +37,7 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
 pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
     let fid: Uuid = path.into_inner();
     let query_result: Result<Option<FaqModel>, sqlx::Error> =
-        sqlx::query_as!(FaqModel, r#"SELECT * FROM faqs WHERE id = $1"#, fid)
+        sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
             .fetch_optional(&state.db)
             .await;
 
@@ -71,7 +71,7 @@ pub async fn create_faq_handler(
         Ok(_) => {
             let query_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                 FaqModel,
-                r#"INSERT INTO faqs (question, answer) VALUES ($1, $2) RETURNING *"#,
+                "INSERT INTO faqs (question, answer) VALUES ($1, $2) RETURNING *",
                 body.question.clone(),
                 body.answer.clone(),
             )
@@ -106,7 +106,7 @@ pub async fn update_faq_handler(
         Ok(_) => {
             let fid: Uuid = path.into_inner();
             let query_result: Result<FaqModel, sqlx::Error> =
-                sqlx::query_as!(FaqModel, r#"SELECT * FROM faqs WHERE id = $1"#, fid)
+                sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
                     .fetch_one(&state.db)
                     .await;
 
@@ -117,7 +117,7 @@ pub async fn update_faq_handler(
 
                     let updated_faq_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                         FaqModel,
-                        r#"UPDATE faqs SET question = $1, answer = $2 WHERE id = $3 RETURNING *"#,
+                        "UPDATE faqs SET question = $1, answer = $2 WHERE id = $3 RETURNING *",
                         body.question.to_string(),
                         body.answer.to_string(),
                         fid
@@ -152,7 +152,7 @@ pub async fn update_faq_handler(
 #[delete("/faqs/{id}")]
 pub async fn delete_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
     let fid: Uuid = path.into_inner();
-    let rows_affected = sqlx::query!(r#"DELETE FROM faqs WHERE id = $1"#, fid)
+    let rows_affected = sqlx::query!("DELETE FROM faqs WHERE id = $1", fid)
         .execute(&state.db)
         .await
         .unwrap()
