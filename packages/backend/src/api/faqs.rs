@@ -36,25 +36,27 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
 #[get("/faqs/{id}")]
 pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) -> impl Responder {
     let fid: Uuid = path.into_inner();
-    let query_result: Result<FaqModel, sqlx::Error> =
-        sqlx::query_as!(FaqModel, "SELECT * FROM faqs WHERE id = $1", fid)
-            .fetch_one(&state.db)
+    let query_result: Result<Option<FaqModel>, sqlx::Error> =
+        sqlx::query_as!(FaqModel, r#"SELECT * FROM faqs WHERE id = $1"#, fid)
+            .fetch_optional(&state.db)
             .await;
 
     match query_result {
-        Ok(faq) => {
+        Ok(Some(faq)) => {
             let faq_response = FaqResponse {
                 status: "ok".to_string(),
                 data: faq,
             };
             HttpResponse::Ok().json(faq_response)
         }
-        Err(_error) => {
+        Ok(None) => {
             // @see https://docs.rs/sqlx-core/0.7.4/sqlx_core/error/enum.Error.html
             // no rows returned by a query that expected to return at least one row
             let message = format!("faq with id: {} not found", fid);
             HttpResponse::NotFound().json(serde_json::json!({"status": "fail", "message": message}))
         }
+        Err(err) => HttpResponse::NotFound()
+            .json(serde_json::json!({"status": "fail", "message": err.to_string()})),
     }
 }
 
@@ -70,8 +72,8 @@ pub async fn create_faq_handler(
             let query_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                 FaqModel,
                 r#"INSERT INTO faqs (question, answer) VALUES ($1, $2) RETURNING *"#,
-                body.question.to_string(),
-                body.answer.to_string(),
+                body.question.clone(),
+                body.answer.clone(),
             )
             .fetch_one(&state.db)
             .await;
