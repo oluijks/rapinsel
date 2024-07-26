@@ -1,5 +1,4 @@
 use crate::model::faq::FaqModel;
-use crate::model::user::UserModel;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -18,16 +17,4 @@ pub struct FaqResponse {
 pub struct FaqsResponse {
     pub status: String,
     pub data: Vec<FaqModel>,
-}
-
-#[derive(Serialize)]
-pub struct UserResponse {
-    pub status: String,
-    pub data: UserModel,
-}
-
-#[derive(Serialize)]
-pub struct UsersResponse {
-    pub status: String,
-    pub data: Vec<UserModel>,
 }
