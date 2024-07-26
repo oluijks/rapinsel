@@ -18,7 +18,7 @@ pub struct FaqModel {
 // @see https://github.com/Keats/validator
 // @see https://dev.to/chaudharypraveen98/form-validation-in-rust-404l
 #[derive(Debug, Deserialize, Serialize, Validate)]
-pub struct CreateFaqPayload {
+pub struct FaqPayload {
     #[validate(length(
         min = 3,
         max = 255,

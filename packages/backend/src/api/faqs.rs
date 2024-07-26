@@ -1,4 +1,4 @@
-use crate::model::faq::{CreateFaqPayload, FaqModel};
+use crate::model::faq::{FaqModel, FaqPayload};
 use crate::util::response::{FaqResponse, FaqsResponse};
 use crate::AppState;
 use actix_web::Responder;
@@ -61,10 +61,7 @@ pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) ->
 }
 
 #[post("/faqs")]
-pub async fn create_faq_handler(
-    state: Data<AppState>,
-    body: Json<CreateFaqPayload>,
-) -> impl Responder {
+pub async fn create_faq_handler(state: Data<AppState>, body: Json<FaqPayload>) -> impl Responder {
     let is_payload_valid = body.validate();
 
     match is_payload_valid {
@@ -98,7 +95,7 @@ pub async fn create_faq_handler(
 pub async fn update_faq_handler(
     state: Data<AppState>,
     path: Path<uuid::Uuid>,
-    body: Json<CreateFaqPayload>,
+    body: Json<FaqPayload>,
 ) -> impl Responder {
     let is_payload_valid = body.validate();
 
