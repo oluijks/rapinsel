@@ -1,12 +1,22 @@
 import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
-import { fontFamily } from 'tailwindcss/defaultTheme';
+// import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config: Config = {
 	darkMode: ['class'],
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	safelist: ['dark'],
 	theme: {
+		fontFamily: {
+			// sans: [...fontFamily.sans]
+			sans: [
+				'"Inter var", sans-serif',
+				{
+					fontFeatureSettings: '"liga" 1, "calt" 1',
+					fontVariationSettings: '"opsz" 32'
+				}
+			]
+		},
 		container: {
 			center: true,
 			padding: '2rem',
@@ -54,9 +64,6 @@ const config: Config = {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
-			},
-			fontFamily: {
-				sans: [...fontFamily.sans]
 			}
 		}
 	},
