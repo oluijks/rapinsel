@@ -1,17 +1,18 @@
 [package]
 name = "rapinsel-backend"
 version = "0.1.0"
-edition = "2021"
 authors = ["Olaf Luijks <olafluijks@proton.me>"]
+edition = "2021"
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/oluijks/rapinsel"
 
 [dependencies]
 actix-cors = "0.7.0"
 actix-web = "4.8.0"
 async-trait = "0.1.80"
 chrono = { version = "0.4.38", features = ["serde"] }
-dotenv = "0.15.0"
+dotenvy = "0.15.7"
 env_logger = "0.11.3"
 futures-util = "0.3.30"
 num_cpus = "1.16.0"

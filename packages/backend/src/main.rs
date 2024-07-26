@@ -22,7 +22,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::env::set_var("RUST_LOG", "actix_web=info");
     }
 
-    dotenv::dotenv().ok();
+    // dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     env_logger::init();
 
     let config: config::Config = config::Config::init();
