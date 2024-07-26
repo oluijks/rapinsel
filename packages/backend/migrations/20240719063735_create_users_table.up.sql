@@ -2,7 +2,6 @@
 
 CREATE TABLE users (
     id SMALLSERIAL PRIMARY KEY,
-    uuid UUID NOT NULL DEFAULT (uuid_generate_v4 ()),
     name VARCHAR(255),
     email VARCHAR(255) NOT NULL,
     encrypted_password TEXT NOT NULL,
