@@ -19,7 +19,7 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
 
     match query_result {
         Ok(faqs) => {
-            if faqs.len() == 0 {
+            if faqs.is_empty() {
                 return HttpResponse::NotFound()
                     .json(serde_json::json!({"status": "ok", "message": "no faqs found"}));
             }
@@ -112,8 +112,8 @@ pub async fn update_faq_handler(
 
             match query_result {
                 Ok(mut faq) => {
-                    faq.question = body.question.clone();
-                    faq.answer = body.answer.clone();
+                    faq.question.clone_from(&body.question);
+                    faq.answer.clone_from(&body.answer);
 
                     let updated_faq_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                         FaqModel,
