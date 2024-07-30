@@ -13,7 +13,7 @@ use validator::Validate;
 #[get("/faqs")]
 pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
     let query_result: Result<Vec<FaqModel>, sqlx::Error> =
-        sqlx::query_as!(FaqModel, "SELECT * FROM faqs")
+        sqlx::query_as!(FaqModel, "SELECT * FROM faqs ORDER BY created_at DESC")
             .fetch_all(&state.db)
             .await;
 
@@ -25,7 +25,7 @@ pub async fn fetch_faqs_handler(state: Data<AppState>) -> impl Responder {
             }
             let faqs_response = FaqsResponse {
                 status: "success".to_string(),
-                data: faqs,
+                faqs,
             };
             HttpResponse::Ok().json(faqs_response)
         }
@@ -45,7 +45,7 @@ pub async fn fetch_faq_handler(state: Data<AppState>, path: Path<uuid::Uuid>) ->
         Ok(Some(faq)) => {
             let faq_response = FaqResponse {
                 status: "ok".to_string(),
-                data: faq,
+                faq,
             };
             HttpResponse::Ok().json(faq_response)
         }
@@ -79,7 +79,7 @@ pub async fn create_faq_handler(state: Data<AppState>, body: Json<FaqPayload>) -
                 Ok(faq) => {
                     let faq_response = FaqResponse {
                         status: "created".to_string(),
-                        data: faq,
+                        faq,
                     };
                     HttpResponse::Created().json(faq_response)
                 }
@@ -112,11 +112,14 @@ pub async fn update_faq_handler(
                     faq.question.clone_from(&body.question);
                     faq.answer.clone_from(&body.answer);
 
+                    let current_date_time = chrono::Utc::now();
+
                     let updated_faq_result: Result<FaqModel, sqlx::Error> = sqlx::query_as!(
                         FaqModel,
-                        "UPDATE faqs SET question = $1, answer = $2 WHERE id = $3 RETURNING *",
+                        "UPDATE faqs SET question = $1, answer = $2, updated_at = $3 WHERE id = $4 RETURNING *",
                         body.question.to_string(),
                         body.answer.to_string(),
+                        current_date_time,
                         fid
                     )
                     .fetch_one(&state.db)
@@ -126,7 +129,7 @@ pub async fn update_faq_handler(
                         Ok(faq) => {
                             let faq_response = FaqResponse {
                                 status: "updated".to_string(),
-                                data: faq,
+                                faq,
                             };
                             HttpResponse::Ok().json(faq_response)
                         }

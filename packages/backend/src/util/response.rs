@@ -10,11 +10,11 @@ pub struct GeneralResponse {
 #[derive(Serialize)]
 pub struct FaqResponse {
     pub status: String,
-    pub data: FaqModel,
+    pub faq: FaqModel,
 }
 
 #[derive(Serialize)]
 pub struct FaqsResponse {
     pub status: String,
-    pub data: Vec<FaqModel>,
+    pub faqs: Vec<FaqModel>,
 }
