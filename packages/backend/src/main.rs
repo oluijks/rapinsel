@@ -63,7 +63,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 header::CONTENT_ENCODING,
             ])
             .allowed_origin("https://rapinsel.io")
+            .allowed_origin("http://localhost:4173")
             .allowed_origin("http://localhost:5173")
+            .allowed_origin("http://192.168.1.170:5173")
             .supports_credentials();
         // endregion:  CORS
 
