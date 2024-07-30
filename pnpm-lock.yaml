@@ -15,6 +15,9 @@ importers:
       '@fontsource-variable/inter':
         specifier: ^5.0.19
         version: 5.0.19
+      '@tanstack/svelte-query':
+        specifier: ^5.51.15
+        version: 5.51.15(svelte@4.2.18)
       bits-ui:
         specifier: ^0.21.12
         version: 0.21.12(svelte@4.2.18)
@@ -24,6 +27,9 @@ importers:
       mode-watcher:
         specifier: ^0.4.0
         version: 0.4.0(svelte@4.2.18)
+      svelte-sonner:
+        specifier: ^0.3.27
+        version: 0.3.27(svelte@4.2.18)
       tailwind-merge:
         specifier: ^2.4.0
         version: 2.4.0
@@ -43,6 +49,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.13
         version: 0.5.13(tailwindcss@3.4.7)
+      '@tanstack/svelte-query-devtools':
+        specifier: ^5.51.15
+        version: 5.51.15(@tanstack/svelte-query@5.51.15(svelte@4.2.18))(svelte@4.2.18)
       '@types/eslint':
         specifier: ^8.56.11
         version: 8.56.11
@@ -457,6 +466,23 @@ packages:
     resolution: {integrity: sha512-ADGcJ8dX21dVVHIwTRgzrcunY6YY9uSlAHHGVKvkA+vLc5qLwEszvKts40lx7z0qc4clpjclwLeK5rVCV2P/uw==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
+
+  '@tanstack/query-core@5.51.15':
+    resolution: {integrity: sha512-xyobHDJ0yhPE3+UkSQ2/4X1fLSg7ICJI5J1JyU9yf7F3deQfEwSImCDrB1WSRrauJkMtXW7YIEcC0oA6ZZWt5A==}
+
+  '@tanstack/query-devtools@5.51.15':
+    resolution: {integrity: sha512-1oSCl+PsCa/aBCGVM2ZdcQLuQ0QYmKXJJB264twEMVM1M0n5CI40trtywORPF+wLGuZNIZzkKL7j/98mOLAIag==}
+
+  '@tanstack/svelte-query-devtools@5.51.15':
+    resolution: {integrity: sha512-RCldkn3SJnCUnTowL7AcuwMEdkBBJw7QHUBg+RZ9rwVOzpltjDx9xDQyr2FN4GsICiCN1iDQdbbigro1WffF/Q==}
+    peerDependencies:
+      '@tanstack/svelte-query': ^5.51.15
+      svelte: ^3.54.0 || ^4.0.0 || ^5.0.0-next.0
+
+  '@tanstack/svelte-query@5.51.15':
+    resolution: {integrity: sha512-aeVaAfe4/2+G9uy724yT6VF55zryGV4gL5hRLoLDxn3Egf5YA89ivaRhYpVv9GjThJvDp0k9JKpuAzdn203Lig==}
+    peerDependencies:
+      svelte: ^3.54.0 || ^4.0.0 || ^5.0.0-next.0
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
@@ -1508,6 +1534,11 @@ packages:
     peerDependencies:
       svelte: ^3.54.0 || ^4.0.0 || ^5.0.0
 
+  svelte-sonner@0.3.27:
+    resolution: {integrity: sha512-+PvbuePNTyTNCepCWqKcFeu+Lo27yYuwfSc7zJvrWjCRMJrWAmccPg3j7jO1W13QoN3TySXU5Trb956VBQiM5Q==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.1
+
   svelte@4.2.18:
     resolution: {integrity: sha512-d0FdzYIiAePqRJEb90WlJDkjUEx42xhivxN8muUBmfZnP+tzUgz12DJ2hRJi8sIHCME7jeK1PTMgKPSfTd8JrA==}
     engines: {node: '>=16'}
@@ -1951,6 +1982,22 @@ snapshots:
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.7
+
+  '@tanstack/query-core@5.51.15': {}
+
+  '@tanstack/query-devtools@5.51.15': {}
+
+  '@tanstack/svelte-query-devtools@5.51.15(@tanstack/svelte-query@5.51.15(svelte@4.2.18))(svelte@4.2.18)':
+    dependencies:
+      '@tanstack/query-devtools': 5.51.15
+      '@tanstack/svelte-query': 5.51.15(svelte@4.2.18)
+      esm-env: 1.0.0
+      svelte: 4.2.18
+
+  '@tanstack/svelte-query@5.51.15(svelte@4.2.18)':
+    dependencies:
+      '@tanstack/query-core': 5.51.15
+      svelte: 4.2.18
 
   '@types/cookie@0.6.0': {}
 
@@ -2939,6 +2986,10 @@ snapshots:
       typescript: 5.5.4
 
   svelte-radix@1.1.0(svelte@4.2.18):
+    dependencies:
+      svelte: 4.2.18
+
+  svelte-sonner@0.3.27(svelte@4.2.18):
     dependencies:
       svelte: 4.2.18
 

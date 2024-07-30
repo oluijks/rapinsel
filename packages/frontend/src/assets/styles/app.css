@@ -13,7 +13,7 @@
 		--popover-foreground: 209 13% 25%;
 		--card: 220 23% 93%;
 		--card-foreground: 209 13% 30%;
-		--border: 220 13% 90%;
+		--border: 220 13% 82%;
 		--input: 220 13% 87%;
 		--primary: 93 27% 38%;
 		--primary-foreground: 0 0% 100%;
@@ -37,7 +37,7 @@
 		--popover-foreground: 229 35% 85%;
 		--card: 235 19% 11%;
 		--card-foreground: 229 35% 80%;
-		--border: 235 9% 18%;
+		--border: 235 9% 23%;
 		--input: 235 9% 21%;
 		--primary: 223 45% 44%;
 		--primary-foreground: 0 0% 100%;
@@ -71,5 +71,80 @@
 
 	body {
 		@apply bg-background text-foreground;
+	}
+
+	/* === Scrollbars === */
+
+	::-webkit-scrollbar {
+		@apply w-[0.65rem];
+		@apply h-2;
+	}
+
+	::-webkit-scrollbar-track {
+		@apply !bg-muted;
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply rounded-full !bg-muted-foreground/30;
+	}
+
+	/* Firefox */
+	/* https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color#browser_compatibility */
+	html {
+		scrollbar-color: hsl(215.4 16.3% 46.9% / 0.3);
+	}
+
+	html.dark {
+		scrollbar-color: hsl(215.4 16.3% 56.9% / 0.3);
+	}
+
+	.hide-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.hide-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	* {
+		@apply border-border;
+	}
+
+	body {
+		@apply bg-background font-sans text-foreground;
+	}
+
+	p {
+		@apply text-pretty;
+	}
+
+	.p {
+		@apply leading-7 lg:text-lg [&:not(:first-child)]:mt-6;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-headings tracking-wider;
+	}
+
+	.h1 {
+		@apply scroll-m-20 text-4xl xl:text-5xl;
+	}
+
+	.h2 {
+		@apply mt-10 scroll-m-20 border-b pb-2 text-3xl transition-colors first:mt-0;
+	}
+
+	.h3 {
+		@apply scroll-m-20 text-2xl font-semibold;
+	}
+
+	.h4 {
+		@apply scroll-m-20 text-xl font-semibold;
 	}
 }

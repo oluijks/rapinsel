@@ -1,6 +1,5 @@
 import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
-// import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config: Config = {
 	darkMode: ['class'],
@@ -8,18 +7,18 @@ const config: Config = {
 	safelist: ['dark'],
 	theme: {
 		fontFamily: {
-			// sans: [...fontFamily.sans]
 			sans: [
-				'"Inter var", sans-serif',
+				'"Inter Variable", sans-serif',
 				{
 					fontFeatureSettings: '"liga" 1, "calt" 1',
 					fontVariationSettings: '"opsz" 32'
 				}
-			]
+			],
+			headings: ['"Urbanist Variable", sans-serif']
 		},
 		container: {
 			center: true,
-			padding: '2rem',
+			// padding: '2rem',
 			screens: {
 				'2xl': '1400px'
 			}
@@ -65,9 +64,9 @@ const config: Config = {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			}
-		}
-	},
-	plugins: [typography]
+		},
+		plugin: [typography]
+	}
 };
 
 export default config;
