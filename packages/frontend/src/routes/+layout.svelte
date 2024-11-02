@@ -11,13 +11,18 @@
 	import Header from '$lib/components/header.svelte';
 	import TailwindIndicator from '$lib/components/tailwind-indicator.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 </script>
 
 <QueryClientProvider client={data.queryClient}>
 	<main>
 		<Header />
-		<slot />
+		{@render children?.()}
 		<Toaster />
 		<ModeWatcher defaultMode="dark" />
 		<TailwindIndicator />

@@ -6,7 +6,11 @@
 	import * as Accordion from '$lib/components/ui/accordion/index.js';
 	import ExclamationTriangle from 'svelte-radix/ExclamationTriangle.svelte';
 
-	export let queryResult: CreateQueryResult<FaqsResponse, Error>;
+	interface Props {
+		queryResult: CreateQueryResult<FaqsResponse, Error>;
+	}
+
+	let { queryResult }: Props = $props();
 </script>
 
 <div>
