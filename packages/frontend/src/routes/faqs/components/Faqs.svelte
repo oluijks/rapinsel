@@ -23,7 +23,7 @@
 			<Alert.Description>{$queryResult.error.message}</Alert.Description>
 		</Alert.Root>
 	{:else}
-		<Accordion.Root>
+		<Accordion.Root type="single">
 			{#each $queryResult.data.faqs as faq}
 				<Accordion.Item value={faq.id}>
 					<Accordion.Trigger class="hover:underline-offset-4">{faq.question}</Accordion.Trigger>
